@@ -43,7 +43,8 @@ def handle_input(socket):
             socket.close()
             break
         try:
-            send_message(socket, message)  # Blocks until sent
+            send_message(socket, message)  # Blocks until
+
         except (BrokenPipeError, ConnectionError):
             break
 
@@ -59,19 +60,24 @@ if __name__ == "__main__":
 
     #handle_input(socket)
     rest = bytes()
-    message = "HELO"
-    if message == "QUIT":
-        socket.shutdown(socket.SHUT_RDWR)
-        socket.close()
-    try:
-        send_message(socket, message)
-        print('wyslano')
-        (messages, rest) = receive_message(socket, rest)
-        for mess in messages:
-            print(mess)
-    except ConnectionError:
-        print('Polaczenie z serwerem zostalo zamkniete')
-        socket.close()
+    while True:
+        message = "HELO"
+        message2 = 'OK'
+        if message == "QUIT":
+            socket.shutdown(socket.SHUT_RDWR)
+            socket.close()
+        try:
+            send_message(socket, message)
+            print('wyslano')
+            send_message(socket, message2)
+            print('wyslano2')
+            (messages, rest) = receive_message(socket, rest)
+            print('odbieranie')
+            for mess in messages:
+                print(mess)
+        except ConnectionError:
+            print('Polaczenie z serwerem zostalo zamkniete')
+            socket.close()
 
     """"
     while True:

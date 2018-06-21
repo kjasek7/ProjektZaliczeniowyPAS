@@ -8,69 +8,65 @@ MESSAGE_SIZER = 12
 clients = {}
 object_lock = threading.Lock()
 
-
 def send_message(socket, question):
     # dodaje znak konca wiadomosci i koduje ja w formacie UTF8
     question += '\0'
     data = question.encode('utf-8') #pierwsza wersja kodowanie w utf8, jak starczy czasu to zamienimy na szyfrowanie
     socket.sendall(data)
 
-def receive_message(socket, data=bytes()):
+def receive_message(socket):
     #Odbiera wiadomosc
     messages = []
     while not messages:
-        received = socket.recv(MESSAGE_SIZER).strip()
+        received = socket.recv(MESSAGE_SIZER)
+        received = str(received.decode('utf-8')).strip('0') #zdekodowane
+        print('Odebrano zdekodowane', received)
         if not received:
             raise ConnectionError()
-            data = data + received
-    data.decode('utf-8')
-    #messages = [message.decode('utf-8') for message in messages]
-    return data
-
-        #data = data + received
-        #(messages, rest) = data#= parse_data(data)
-   # messages = [message.decode('utf-8') for message in messages] #zdekodowanie wiadomosci
-    #return (messages, data)
-
+        messages = received
+    print('wiadomosc zwroc',messages)
+    return messages
 
 # WATKI OBSLUGI KLIENTA
 def client_receive(socket, addr):
-    """ Jej zadaniem jest obsluga odbierania wiadomosci od klienta"""
-    data = bytes()
+    #obsluga watku wysylania
+    #data = bytes()
     while True:  # funkcja dziala w petli nieskaczonej bo nie wiadomo ile wiadomosci bedzie przesylal klient
         try:
             #(messages, data) = receive_message(socket, data)
-            messages = receive_message(socket, data)
+            (messages) = receive_message(socket)
+            print('Wyswietlenie messages',messages)
             """oczekiwanie na wiadomosc, pobranie i zdekodowanie
             do funkcji receive_message przekazujemy gniazdo klienta oraz zmienna data, poczatkowo pusta"""
         except (EOFError, ConnectionError):  # komunikacja moze sie zakonczyc wyjatkiem
             client_disconnect(socket, addr)
             break
+       # for msg in messages:  # kazda wiadomosc wyswietlana jest na konsoli serwera
+     #       print('msg',msg)
+        print('{}: {}'.format(addr, messages)) #wyswietla wartosc odebranych wiadomosci
 
-        for message in messages:  # kazda wiadomosc wyswietlana jest na konsoli serwera
-            print('{}: {}'.format(addr, message)) #wyswietla wartosc odebranych wiadomosci
+        # Obsluzenie pierwszej wiadomosci. Dodanie ID.
+        with object_lock:
+            clientId = clients[socket.fileno()]['id']
+            if clientId is None:  # sprawdzamy pierwsza wiadomosc od klienta porownujac jego nazwe z wartoscia none. Jesli name jest None to oznacza ze jeszcze zadna wiadomosc nie zostala przeslana
+                clients[socket.fileno()]['id'] = messages  # wartosci pierwszej wiadomosci zapisujemy w polu name w slowniku skojarzonym z klientem
+            else:
+                # jestli wartosc client name nie jest none to znaczy ze wczesniej wyslano wiadomosc powitalna ustawiajaca id klienta
+                # i kolejna wiadomosc powinna rozpoaczac 'gre'
+                clients[socket.fileno()]['queue'].put(messages)
 
-            # Obsluzenie pierwszej wiadomosci. Dodanie ID.
-            with object_lock:
-                clientId = clients[socket.fileno()]['id']
-                if clientId is None:  # sprawdzamy pierwsza wiadomosc od klienta porownujac jego nazwe z wartoscia none. Jesli name jest None to oznacza ze jeszcze zadna wiadomosc nie zostala przeslana
-                    clients[socket.fileno()]['id'] = message  # wartosci pierwszej wiadomosci zapisujemy w polu name w slowniku skojarzonym z klientem
-                else:
-                    # jestli wartosc client name nie jest none to znaczy ze wczesniej wyslano wiadomosc powitalna ustawiajaca id klienta
-                    # i kolejna wiadomosc powinna rozpoaczac 'gre'
-                    clients[socket.fileno()]['queue'].put(message)
-
-                    """ Add message to each connected client’s send queue 
-                    message = '{}: {}'.format(clientId, message)  # dodawana jest nazwa nadawcy do wiadomosci
-                    # ponizej przygotowana wiadomosc mozna rozeslac czyli dodac do kolejki wiad skojarzonej z kazdym z klientow zapisanych we wspoldzielonej zmiennej client
-                    for i in clients:
-                        clients[i]['queue'].put(message)
-                    """
+                """ Add message to each connected client’s send queue 
+                message = '{}: {}'.format(clientId, message)  # dodawana jest nazwa nadawcy do wiadomosci
+                # ponizej przygotowana wiadomosc mozna rozeslac czyli dodac do kolejki wiad skojarzonej z kazdym z klientow zapisanych we wspoldzielonej zmiennej client
+                for i in clients:
+                    clients[i]['queue'].put(message)
+                """
 
 def client_send(socket, que, addr):
     """Monitoruje zawartosc kolejki klienta i gdy pojawi sie w niej nowa wiadomosc to odpowiada mu"""
     while True:  # ta funkcja rowniez dziala w petli nieskonczonej
-        message = que.get()  # wywolanie metody get na obiekcie kolejki klienta
+        message = que.get()  # wywolanie metody get na obiekcie kolejki
+        print('Kolejka',message)
         if message == None:
             break
         try:
@@ -106,12 +102,12 @@ if __name__ == "__main__":
     print('Trwa nasluchiwanie na: {}'.format(adres))
 
     while True:
-        client, addr = socket.accept()  # odbiera i akceptuje polaczenie
+        client, addr = socket.accept()         # odbiera i akceptuje polaczenie
         print('Polaczono z: {}'.format(addr))  # wyswietlenei info o polaczeniu
 
         que = queue.Queue()  # tworzy obiekt kolejki FIFO i zapisuje w zmiennej q. Kolejka ta jest 'thread safe'
-        # Zapisany w zmiennej que obiekt Queue bedzie sluzyl jako bufor otrzymywanych wiadomosci od klientow.
-        with object_lock:  # w zmiennej clients zapisywany jest slownik opisujacy nowego klienta.
+                             # Zapisany w zmiennej que obiekt Queue bedzie sluzyl jako bufor otrzymywanych wiadomosci od klientow.
+        with object_lock:    # w zmiennej clients zapisywany jest slownik opisujacy nowego klienta.
             clients[socket.fileno()] = {
                 'id': None,
                 'queue': que
