@@ -1,8 +1,7 @@
 # Server.py
-import sys
+import queue
 import socket
 import threading
-import queue
 
 PORT = 8888
 MESSAGE_SIZER = 12
@@ -109,7 +108,7 @@ if __name__ == "__main__":
     while True:
         client, addr = socket.accept()  # odbiera i akceptuje polaczenie
         print('Polaczono z: {}'.format(addr))  # wyswietlenei info o polaczeniu
-
+        send_message(client)
         que = queue.Queue()  # tworzy obiekt kolejki FIFO i zapisuje w zmiennej q. Kolejka ta jest 'thread safe'
         # Zapisany w zmiennej que obiekt Queue bedzie sluzyl jako bufor otrzymywanych wiadomosci od klientow.
         with object_lock:  # w zmiennej clients zapisywany jest slownik opisujacy nowego klienta.
