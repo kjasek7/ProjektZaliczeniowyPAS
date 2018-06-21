@@ -10,7 +10,6 @@ BT_WIDTH=250
 BT_HEIGHT=120
 
 
-
 class Game(object):
 
     def __init__(self):
@@ -24,7 +23,6 @@ class Game(object):
 
         self.menu()
         self.loop()
-
 
     def loop(self):
         About = False
@@ -52,7 +50,6 @@ class Game(object):
                         Game = True
                         self.pytanie()
 
-
                     elif self.ebrect.collidepoint(x, y):
                         self.sbrect = pygame.Rect((-1, -1), (0, 0))
                         self.ebrect = pygame.Rect((-1, -1), (0, 0))
@@ -68,6 +65,7 @@ class Game(object):
                         About = True
                         Game = False
                         self.about()
+
                     elif self.zbrect.collidepoint(x, y):
                         self.zlicz()
                         if self.postawiono == self.money:
@@ -79,8 +77,6 @@ class Game(object):
                             self.render_multi_line("Zle postawiles pieniadze!", BG_WIDTH/2-50, 420, 15)
                             print(self.money)
                             print(self.postawiono)
-
-
 
                 keys = pygame.key.get_pressed()
 
@@ -94,7 +90,6 @@ class Game(object):
 
                         if self.koniecCzasu == True:
                             self.pytanie()
-
 
                         pygame.display.update()
 
@@ -118,9 +113,7 @@ class Game(object):
                 self.entry4.update()
                 self.entry4.draw(self.screen)
 
-
                 self.update()
-
 
             pygame.display.update()
 
@@ -254,15 +247,11 @@ szansę ma tylko raz w czasie całej gry."""
         self.render_multi_line("Pytanie", 20, 20, 45)
         self.render_multi_line("Poprawna", BG_WIDTH/2-100, 150, 45)
         self.render_multi_line("2) odpoiwedz", 50, 200, 30)
-        
 
     def zlicz(self):
         self.postawiono=0
         for i in self.pole.keys():
             self.postawiono+=int(self.pole[i])
-
-
-
 
 
 Game()
