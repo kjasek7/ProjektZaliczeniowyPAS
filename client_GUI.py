@@ -1,6 +1,9 @@
+import sys
+
 import pygame
 from pygame import *
 
+import client
 import pygooey
 
 BG_WIDTH = 900
@@ -21,7 +24,12 @@ class Game(object):
         self.myfont = pygame.font.SysFont("monospace", 40)
         self.fps_clock = pygame.time.Clock()
 
+        self.client = client.Client()
+        if(self.client.connect()):
+            self.start()
 
+
+    def start(self):
         self.menu()
         self.loop()
 
@@ -34,17 +42,19 @@ class Game(object):
         self.pole = {str(1):0,str(2):0,str(3):0,str(4):0}
         self.prawidlowa = str(2)
         self.postawiono = 0
-        self.iloscPytan = 0
+        self.iloscPytan = 1
 
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.client.send_message("Kliknieto exit")
+                    self.client.close()
                     sys.exit(0)
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
                     if self.sbrect.collidepoint(x, y):
-                        print('Rozpoczęto gre')
+                        self.client.send_message("Kliknieto start")
                         self.sbrect = pygame.Rect((-1, -1), (0, 0))
                         self.ebrect = pygame.Rect((-1, -1), (0, 0))
                         self.ibrect = pygame.Rect((-1, -1), (0, 0))
@@ -53,14 +63,15 @@ class Game(object):
                         self.pytanie()
 
                     elif self.ebrect.collidepoint(x, y):
+
                         self.sbrect = pygame.Rect((-1, -1), (0, 0))
                         self.ebrect = pygame.Rect((-1, -1), (0, 0))
                         self.ibrect = pygame.Rect((-1, -1), (0, 0))
-                        print('Wyjście z gry')
+                        self.client.send_message("Kliknieto exit")
                         sys.exit(0)
 
                     elif self.ibrect.collidepoint(x, y):
-                        print('Wlaczono instrukcje')
+                        self.client.send_message("Kliknieto instrukcja")
                         self.sbrect = pygame.Rect((-1, -1), (0, 0))
                         self.ebrect = pygame.Rect((-1, -1), (0, 0))
                         self.ibrect = pygame.Rect((-1, -1), (0, 0))
@@ -75,7 +86,7 @@ class Game(object):
                 if event.type == pygame.KEYDOWN:
                     if keys[pygame.K_SPACE]:
                         if self.About == True:
-                            print('Rozpoczato gre')
+                            self.client.send_message("Rozpoczeto gre")
                             self.About = False
                             self.Game = True
                             self.pytanie()
@@ -200,7 +211,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         bg = pygame.image.load('Img/ss.jpg').convert()
         bg = pygame.transform.scale(bg, (BG_WIDTH, BG_HEIGHT))
         self.screen.blit(bg, (0, 0))
-
+        self.client.send_message("Pytanie : "+str(self.iloscPytan))
         self.render_multi_line("Pytanie", 20, 20, 45)
         self.render_multi_line("1) odpowiedz", 50, 130, 30)
         self.render_multi_line("2) odpoiwedz", 50, 200, 30)
@@ -226,18 +237,21 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
             if second<=60:
                 pygame.display.set_caption('Postaw na milion! Pozostały czas: '+ str(int(60-second))+"s")
             else:
+                self.client.send_message("Koniec czasu")
                 self.koniecCzasu=True
                 self.sprawdza()
 
-    def print_on_enter(self, id, final):
-        if final != "":
-            self.pole[id]=final
+    def print_on_enter(self, id, text):
+        if text != "":
+            self.pole[id]=text
 
     def sprawdza(self):
         if self.koniecCzasu == True:
             for i in self.pole.keys():
+                self.client.send_message("Sprawdzanie odpoiwedzi")
                 if(self.prawidlowa==i):
                     self.money=self.pole[i]
+                    self.client.send_message("Pozostale pieniadze gracza : "+ str(self.money))
             self.poprawna()
 
     def poprawna(self):
@@ -269,6 +283,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         bg = pygame.transform.scale(bg, (BG_WIDTH, BG_HEIGHT))
         self.screen.blit(bg, (0, 0))
         self.render_multi_line("Wygrales : "+str(self.money)+"zl", 20, 20, 45)
+        self.client.send_message("Gracz wygral: "+str(self.money))
         self.Game = False
         self.koniecCzasu = False
         y = BG_HEIGHT - BG_HEIGHT / 4
