@@ -53,7 +53,7 @@ class TextBox(object):
         self.blink = True
         self.blink_timer = 0.0
         self.delete_timer = 0.0
-        self.accepted = string.ascii_letters+string.digits+string.punctuation+" "
+        self.accepted = string.digits
         self.process_kwargs(kwargs)
 
     def process_kwargs(self,kwargs):
