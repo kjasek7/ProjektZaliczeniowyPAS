@@ -1,9 +1,17 @@
 import queue
 import socket
 import threading
+import random
 
 clients = {}
 object_lock = threading.Lock()
+losujPytanie = []
+def pytania():
+    pytanie = []
+    with open("Pytania.txt", "r") as file:
+        for line in file:
+            pytanie.append(line.split(":"))
+    losujPytanie = pytanie[random.randint(0,len(pytanie)-1)]
 
 def parser(data):
     parts = data.split(b'\0')
