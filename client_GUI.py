@@ -1,5 +1,4 @@
 import pygame
-import sys
 from pygame import *
 
 import pygooey
@@ -20,19 +19,22 @@ class Game(object):
         self.gameIcon = pygame.image.load('Img\mainLogo.png')
         pygame.display.set_icon(self.gameIcon)
         self.myfont = pygame.font.SysFont("monospace", 40)
+        self.fps_clock = pygame.time.Clock()
+
 
         self.menu()
         self.loop()
 
     def loop(self):
-        About = False
-        Game = False
+        self.About = False
+        self.Game = False
         self.koniecCzasu = False
         self.time = 0.0
         self.money = 1000000
         self.pole = {str(1):0,str(2):0,str(3):0,str(4):0}
         self.prawidlowa = str(2)
         self.postawiono = 0
+        self.iloscPytan = 0
 
         while True:
             for event in pygame.event.get():
@@ -46,8 +48,8 @@ class Game(object):
                         self.sbrect = pygame.Rect((-1, -1), (0, 0))
                         self.ebrect = pygame.Rect((-1, -1), (0, 0))
                         self.ibrect = pygame.Rect((-1, -1), (0, 0))
-                        About = False
-                        Game = True
+                        self.About = False
+                        self.Game = True
                         self.pytanie()
 
                     elif self.ebrect.collidepoint(x, y):
@@ -62,58 +64,65 @@ class Game(object):
                         self.sbrect = pygame.Rect((-1, -1), (0, 0))
                         self.ebrect = pygame.Rect((-1, -1), (0, 0))
                         self.ibrect = pygame.Rect((-1, -1), (0, 0))
-                        About = True
-                        Game = False
+                        self.About = True
+                        self.Game = False
                         self.about()
 
-                    elif self.zbrect.collidepoint(x, y):
-                        self.zlicz()
-                        if self.postawiono == self.money:
-                            self.koniecCzasu = True
-                            print('Zatwierdzono')
-                            self.zbrect = pygame.Rect((-1, -1), (0, 0))
-                            self.sprawdza()
-                        else:
-                            self.render_multi_line("Zle postawiles pieniadze!", BG_WIDTH/2-50, 420, 15)
-                            print(self.money)
-                            print(self.postawiono)
+
 
                 keys = pygame.key.get_pressed()
 
                 if event.type == pygame.KEYDOWN:
                     if keys[pygame.K_SPACE]:
-                        if About == True:
+                        if self.About == True:
                             print('Rozpoczato gre')
-                            About = False
-                            Game = True
+                            self.About = False
+                            self.Game = True
                             self.pytanie()
 
                         if self.koniecCzasu == True:
+                            self.koniecCzasu = False
+                            self.start_ticks = pygame.time.get_ticks()
                             self.pytanie()
 
-                        pygame.display.update()
 
-                if Game==True:
+                if self.Game==True:
                     self.entry1.get_event(event)
                     self.entry2.get_event(event)
                     self.entry3.get_event(event)
                     self.entry4.get_event(event)
+                    self.entry1.update()
+                    self.entry1.draw(self.screen)
+                    self.entry2.update()
+                    self.entry2.draw(self.screen)
+                    self.entry3.update()
+                    self.entry3.draw(self.screen)
+                    self.entry4.update()
+                    self.entry4.draw(self.screen)
 
-            if Game == True:
 
+
+            time.wait(60)
+            if self.Game == True:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = event.pos
+                    if self.zbrect.collidepoint(x, y):
+                        self.zlicz()
+                        if int(self.postawiono) == int(self.money):
+                            self.koniecCzasu = True
+                            print('Zatwierdzono')
+                            self.zbrect = pygame.Rect((-1, -1), (0, 0))
+                            self.sprawdza()
+                        else:
+                            self.render_multi_line("Zle postawiles pieniadze!", BG_WIDTH / 2 - 50, 420, 15)
+                            print(int(self.money))
+                            print(int(self.postawiono))
                 seconds = round((pygame.time.get_ticks() - self.start_ticks) / 1000,0)
 
                 self.updateClock(seconds)
-                self.entry1.update()
-                self.entry1.draw(self.screen)
-                self.entry2.update()
-                self.entry2.draw(self.screen)
-                self.entry3.update()
-                self.entry3.draw(self.screen)
-                self.entry4.update()
-                self.entry4.draw(self.screen)
-
                 self.update()
+
+            #self.fps_clock.tick(60)
 
             pygame.display.update()
 
@@ -143,24 +152,19 @@ class Game(object):
     def about(self):
         self.screen.fill((71, 209, 255))
 
-        self.render_multi_line("Instrukcja", BG_WIDTH/2-120, 50, 40)
-        text = """Pojedynczą grę rozgrywa jedna osoba (jeden klient). Klient rozgrywkę
-rozpoczyna z kontem równym milion złotych. Aby wygrać te pieniądze musi 
-odpowiedzieć na 8 pytań. Po każdym pytaniu gracz ma możliwość wyboru 
-kategorii pytania spośród dwóch możliwych. Na kategorię składają 
-się tematyczne pytania, z puli których zostanie wylosowane jedno pytanie.
-Na każde z nich ma 60 sekund. Gra odbywa się w okienku z czterema polami, 
-które odpowiadają zapadniom. Każdemu z nich przypisana jest jedna możliwa 
-odpowiedź. Gracz wybiera właściwą odpowiedź, podając ilość pieniędzy 
-w wybranym przez siebie  polu. Jeżeli nie są pewny odpowiedzi, może 
-rozdzielić pieniądze pomiędzy kilka pól. Po upływie czasu zerowane 
-są wszystkie pola z błędnymi odpowiedziami, w ten sposób zostają 
-na koncie tylko te pieniądze, które zostały przypisane na właściwą odpowiedź.
-Gracz ma możliwość skorzystania z dodatkowych 30 sekund po pytaniu,
-podczas których może zmienić rozłożenie pieniędzy na pola ale taką 
-szansę ma tylko raz w czasie całej gry."""
+        self.render_multi_line("Instrukcja", BG_WIDTH/2-100, 50, 40)
+        text = """Pojedynczą grę rozgrywa jedna osoba (jeden klient). Klient rozgrywkę rozpoczyna z kontem równym milion złotych. 
+Aby wygrać te pieniądze musi odpowiedzieć na 8 pytań. Po każdym pytaniu gracz ma możliwość wyboru 
+kategorii pytania spośród dwóch możliwych. Na kategorię składają się tematyczne pytania, 
+z puli których zostanie wylosowane jedno pytanie. Na każde z nich ma 60 sekund. Gra odbywa się w okienku 
+z czterema polami, które odpowiadają zapadniom. Każdemu z nich przypisana jest jedna możliwa  odpowiedź. 
+Gracz wybiera właściwą odpowiedź, podając ilość pieniędzy w wybranym przez siebie  polu. Jeżeli nie są pewny 
+odpowiedzi, może rozdzielić pieniądze pomiędzy kilka pól. Po upływie czasu zerowane  są wszystkie pola 
+z błędnymi odpowiedziami, w ten sposób zostają na koncie tylko te pieniądze, które zostały przypisane 
+na właściwą odpowiedź. Gracz ma możliwość skorzystania z dodatkowych 30 sekund po pytaniu,
+podczas których może zmienić rozłożenie pieniędzy na pola ale taką szansę ma tylko raz w czasie całej gry."""
         self.render_multi_line(text, 50, 130, 18)
-        self.render_multi_line("Nacisnij [SPACJA],zeby rozpoczac gre",100, BG_HEIGHT-BG_HEIGHT/5,30)
+        self.render_multi_line("Nacisnij [SPACJA],zeby rozpoczac gre",200, BG_HEIGHT-BG_HEIGHT/3,30)
 
     def render_multi_line(self, text, x, y, rozmiar,color=(255, 255, 0)):
         myfont = pygame.font.SysFont("Arial", rozmiar,bold=True)
@@ -221,37 +225,63 @@ szansę ma tylko raz w czasie całej gry."""
 
     def updateClock(self, second):
         if self.koniecCzasu ==False:
-            if second<=75:
+            if second<=40:
                 pygame.display.set_caption('Postaw na milion! Pozostały czas: '+ str(int(75-second))+"s")
             else:
                 self.koniecCzasu=True
                 self.sprawdza()
 
     def print_on_enter(self, id, final):
-        self.pole[id]=final
+        if final != "":
+            self.pole[id]=final
         print(self.pole)
 
     def sprawdza(self):
         if self.koniecCzasu == True:
             for i in self.pole.keys():
                 if(self.prawidlowa==i):
-                    self.screen.fill((0, 0, 0))
                     self.money=self.pole[i]
             self.poprawna()
 
     def poprawna(self):
+        self.screen.fill((0, 0, 0))
+        self.iloscPytan += 1
         bg = pygame.image.load('Img/ss.jpg').convert()
         bg = pygame.transform.scale(bg, (BG_WIDTH, BG_HEIGHT))
         self.screen.blit(bg, (0, 0))
+        self.pole = {str(1): 0, str(2): 0, str(3): 0, str(4): 0}
 
         self.render_multi_line("Pytanie", 20, 20, 45)
-        self.render_multi_line("Poprawna", BG_WIDTH/2-100, 150, 45)
+        self.render_multi_line("Poprawna odpowiedz to:", BG_WIDTH/2-100, 150, 45)
         self.render_multi_line("2) odpoiwedz", 50, 200, 30)
+        print(self.iloscPytan)
+        if(self.iloscPytan == 2):
+            print("asdP")
+            self.koniec()
+        elif(self.money == 0):
+            print("asdM")
+            self.koniec()
 
     def zlicz(self):
-        self.postawiono=0
+        self.postawiono = 0
         for i in self.pole.keys():
-            self.postawiono+=int(self.pole[i])
+            self.postawiono += int(self.pole[i])
+
+
+    def koniec(self):
+        self.screen.fill((0, 0, 0))
+        bg = pygame.image.load('Img/ss2.jpg').convert()
+        bg = pygame.transform.scale(bg, (BG_WIDTH, BG_HEIGHT))
+        self.screen.blit(bg, (0, 0))
+        self.render_multi_line("Wygrales : "+str(self.money)+"zl", 20, 20, 45)
+        self.Game = False
+        self.koniecCzasu = False
+        y = BG_HEIGHT - BG_HEIGHT / 4
+        self.eb = pygame.image.load('Img/buttone.png')
+        self.eb = pygame.transform.scale(self.eb, (BT_WIDTH, BT_HEIGHT))
+        self.ebrect = pygame.Rect((650, y), (BT_WIDTH, BT_HEIGHT))
+        self.screen.blit(self.eb, (650, y))
+
 
 
 Game()
