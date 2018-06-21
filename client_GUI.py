@@ -210,7 +210,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         self.render_multi_line("3) odpoiwedz", 50, 270, 30)
         self.render_multi_line("4) odpoiwedz", 50, 340, 30)
         pygame.display.update()
-        #self.wait()
+        self.wait()
         self.game()
     def wait(self):
         start_ticks = pygame.time.get_ticks()
@@ -255,7 +255,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         self.render_multi_line("Poprawna odpowiedz to:", BG_WIDTH/2-100, 150, 45)
         self.render_multi_line("2) odpoiwedz", 50, 200, 30)
         print(self.iloscPytan)
-        if(self.iloscPytan == 2):
+        if(self.iloscPytan == 8):
             print("asdP")
             self.koniec()
         elif(self.money == 0):
