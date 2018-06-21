@@ -1,3 +1,5 @@
+import sys
+
 import pygame
 from pygame import *
 
@@ -44,7 +46,7 @@ class Game(object):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
                     if self.sbrect.collidepoint(x, y):
-                        print('Start')
+                        print('Rozpoczęto gre')
                         self.sbrect = pygame.Rect((-1, -1), (0, 0))
                         self.ebrect = pygame.Rect((-1, -1), (0, 0))
                         self.ibrect = pygame.Rect((-1, -1), (0, 0))
@@ -102,7 +104,7 @@ class Game(object):
 
 
 
-            time.wait(60)
+
             if self.Game == True:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
@@ -110,13 +112,10 @@ class Game(object):
                         self.zlicz()
                         if int(self.postawiono) == int(self.money):
                             self.koniecCzasu = True
-                            print('Zatwierdzono')
                             self.zbrect = pygame.Rect((-1, -1), (0, 0))
                             self.sprawdza()
                         else:
                             self.render_multi_line("Zle postawiles pieniadze!", BG_WIDTH / 2 - 50, 420, 15)
-                            print(int(self.money))
-                            print(int(self.postawiono))
                 seconds = round((pygame.time.get_ticks() - self.start_ticks) / 1000,0)
 
                 self.updateClock(seconds)
@@ -212,6 +211,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         pygame.display.update()
         self.wait()
         self.game()
+
     def wait(self):
         start_ticks = pygame.time.get_ticks()
         seconds = round((pygame.time.get_ticks() - start_ticks) / 1000, 0)
@@ -225,8 +225,8 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
 
     def updateClock(self, second):
         if self.koniecCzasu ==False:
-            if second<=40:
-                pygame.display.set_caption('Postaw na milion! Pozostały czas: '+ str(int(75-second))+"s")
+            if second<=60:
+                pygame.display.set_caption('Postaw na milion! Pozostały czas: '+ str(int(60-second))+"s")
             else:
                 self.koniecCzasu=True
                 self.sprawdza()
@@ -234,7 +234,6 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
     def print_on_enter(self, id, final):
         if final != "":
             self.pole[id]=final
-        print(self.pole)
 
     def sprawdza(self):
         if self.koniecCzasu == True:
@@ -254,12 +253,10 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         self.render_multi_line("Pytanie", 20, 20, 45)
         self.render_multi_line("Poprawna odpowiedz to:", BG_WIDTH/2-100, 150, 45)
         self.render_multi_line("2) odpoiwedz", 50, 200, 30)
-        print(self.iloscPytan)
+
         if(self.iloscPytan == 8):
-            print("asdP")
             self.koniec()
         elif(self.money == 0):
-            print("asdM")
             self.koniec()
 
     def zlicz(self):
