@@ -1,8 +1,7 @@
 import sys
-
+import pickle
 import pygame
 from pygame import *
-
 import client
 import pygooey
 
@@ -26,6 +25,7 @@ class Game(object):
 
         self.client = client.Client()
         if(self.client.connect()):
+            self.client.send_message('ID')
             self.start()
 
 
@@ -212,6 +212,9 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         bg = pygame.transform.scale(bg, (BG_WIDTH, BG_HEIGHT))
         self.screen.blit(bg, (0, 0))
         self.client.send_message("Pytanie : "+str(self.iloscPytan))
+        print(type(self.client.send_message("PYTANIE")))
+        pytanie =self.client.receive_message()
+        pytaniel=pickle.load(pytanie)
         self.render_multi_line("Pytanie", 20, 20, 45)
         self.render_multi_line("1) odpowiedz", 50, 130, 30)
         self.render_multi_line("2) odpoiwedz", 50, 200, 30)

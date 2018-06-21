@@ -2,6 +2,8 @@ import queue
 import socket
 import threading
 import random
+import  pickle
+
 
 clients = {}
 object_lock = threading.Lock()
@@ -35,8 +37,14 @@ def receive_message(socket):
 def send_message(socket, question):
     # dodaje znak konca wiadomosci i koduje ja w formacie UTF8
     question += '\0'
-    data = question.encode('utf-8') #pierwsza wersja kodowanie w utf8, jak starczy czasu to zamienimy na szyfrowanie
-    socket.sendall(data)
+    #question = [message.encode('utf-8') for message in question]
+    data = question #pierwsza wersja kodowanie w utf8, jak starczy czasu to zamienimy na szyfrowanie
+    if type(data)==type(str()):
+        data = question.encode('utf-8')
+        socket.sendall(data)
+    else:
+        dana = pickle.dumps(data)
+        socket.sendall(dana)
 
 def client_receive(socket, addr):
 
@@ -47,7 +55,6 @@ def client_receive(socket, addr):
             client_disconnect(socket, addr)
             break
         for message in messages:
-            print('message',message)
             print('{}: {}'.format(addr, message))
 
             with object_lock:
@@ -62,9 +69,10 @@ def client_receive(socket, addr):
 def client_send(socket, client_queue, addr):
     while True:
         message = client_queue.get()
-        if (message == 'OK'):
-            message = "Witaj w grze"
-        if message == None: break
+        if (message == 'PYTANIE'):
+            pytania()
+            message = losujPytanie
+        elif message == None: break
         try:
             #message = "wal sie"
             send_message(socket, message)
