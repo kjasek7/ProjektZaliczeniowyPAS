@@ -23,9 +23,10 @@ def receive_message(socket, data=bytes()):
         if not received:
             raise ConnectionError()
             data = data + received
-    data = data.decode('utf-8')
+    data.decode('utf-8')
     #messages = [message.decode('utf-8') for message in messages]
     return data
+
         #data = data + received
         #(messages, rest) = data#= parse_data(data)
    # messages = [message.decode('utf-8') for message in messages] #zdekodowanie wiadomosci
@@ -89,7 +90,6 @@ def client_disconnect(socket, addr):
         if que:
             que.put(None)
             del clients[fd]
-
         addr = socket.getpeername()
         print('Klient {} zostal rozlaczony'.format(addr))
         socket.close()

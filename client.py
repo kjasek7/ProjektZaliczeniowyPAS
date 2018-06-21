@@ -1,6 +1,5 @@
-import sys
 import socket
-import threading
+
 
 def fill_msg_left(n, width, pad="0"):
     return ((pad * width) + str(n))[-width:]
@@ -32,6 +31,7 @@ def receive_message(socket, nodecoded_data=bytes()): #zamiast funkcji recv
 def send_message(socket, message):
     data = prepare_message(message)# dodaje znak konca wiadomosci i koduje ja w formacie UTF8
     data = data.encode('utf-8')
+    print(data)
     socket.sendall(data)
 
 def handle_input(socket):
@@ -59,6 +59,21 @@ if __name__ == "__main__":
 
     #handle_input(socket)
     rest = bytes()
+    message = "HELO"
+    if message == "QUIT":
+        socket.shutdown(socket.SHUT_RDWR)
+        socket.close()
+    try:
+        send_message(socket, message)
+        print('wyslano')
+        (messages, rest) = receive_message(socket, rest)
+        for mess in messages:
+            print(mess)
+    except ConnectionError:
+        print('Polaczenie z serwerem zostalo zamkniete')
+        socket.close()
+
+    """"
     while True:
         message = "HELO"
         if message == "QUIT":
@@ -74,5 +89,5 @@ if __name__ == "__main__":
             print('Polaczenie z serwerem zostalo zamkniete')
             socket.close()
             break
-
+    """
     socket.close()
