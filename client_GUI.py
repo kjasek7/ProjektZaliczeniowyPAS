@@ -112,8 +112,6 @@ class Game(object):
                     self.entry4.draw(self.screen)
 
 
-
-
             if self.Game == True:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
@@ -231,7 +229,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
     def wait(self):
         start_ticks = pygame.time.get_ticks()
         seconds = round((pygame.time.get_ticks() - start_ticks) / 1000, 0)
-        while seconds<15:
+        while seconds<1:
             seconds = round((pygame.time.get_ticks() - start_ticks) / 1000, 0)
         return
 
@@ -256,7 +254,17 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         if self.koniecCzasu == True:
             for i in self.pole.keys():
                 self.client.send_message("Sprawdzanie odpoiwedzi")
-                if(self.odp[4]==i):
+                print(type(self.odp[4][0]))
+                if(self.odp[4][0]=='a'):
+                    self.odpp = '1'
+                elif(self.odp[4][0]=='b'):
+                    self.odpp = '2'
+                elif (self.odp[4][0] == 'c'):
+                    self.odpp = '3'
+                elif (self.odp[4][0] == 'd'):
+                    self.odpp = '4'
+                #if(self.odp[4]==i):
+                if(self.odpp == i):
                     self.money=self.pole[i]
                     self.client.send_message("Pozostale pieniadze gracza : "+ str(self.money))
             self.poprawna()
@@ -271,7 +279,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
 
         self.render_multi_line("Pytanie", 20, 20, 45)
         self.render_multi_line("Poprawna odpowiedz to:", BG_WIDTH/2-100, 150, 45)
-        self.render_multi_line("2) odpoiwedz", 50, 200, 30)
+        self.render_multi_line(self.odp[4], 50, 200, 30)
 
         if(self.iloscPytan == 8):
             self.koniec()
