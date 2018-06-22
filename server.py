@@ -26,7 +26,7 @@ def receive_message(socket):
     messages = []
     data = bytes()
     while not messages:
-        received = socket.recv(2048)
+        received = socket.recv(4096)
         if not received:
             raise ConnectionError()
         data = data + received
@@ -40,7 +40,7 @@ def send_message(socket, question):
     question += '\0'
     data = question.encode('utf-8')
     print('wysylam', data)
-    socket.sendall(data)
+    socket.send(data)
 
     """
     data = question #pierwsza wersja kodowanie w utf8, jak starczy czasu to zamienimy na szyfrowanie
@@ -92,14 +92,16 @@ def client_send(socket, client_queue, addr):
                 print("c", msg4)
                 print("d", msg5)
                 print("odp", msg6)
+                msg7 = ""
                 send_message(socket, msg1) #pytanie
                 send_message(socket, msg2) #a
                 send_message(socket, msg3) #b
                 send_message(socket, msg4) #c
                 send_message(socket, msg5) #d
                 send_message(socket, msg6) #poprawna odp
+                send_message(socket, msg7)
                 print('wyslano')
-                break
+                #break
             #message = "wal sie"
             #send_message(socket, message)
         except (ConnectionError, BrokenPipeError):

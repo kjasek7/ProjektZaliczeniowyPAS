@@ -60,7 +60,7 @@ class Game(object):
                         self.ibrect = pygame.Rect((-1, -1), (0, 0))
                         self.About = False
                         self.Game = True
-                        self.pytanie()
+                        self.pytania()
 
                     elif self.ebrect.collidepoint(x, y):
 
@@ -89,12 +89,12 @@ class Game(object):
                             self.client.send_message("Rozpoczeto gre")
                             self.About = False
                             self.Game = True
-                            self.pytanie()
+                            self.pytania()
 
                         if self.koniecCzasu == True:
                             self.koniecCzasu = False
                             self.start_ticks = pygame.time.get_ticks()
-                            self.pytanie()
+                            self.pytania()
 
 
                 if self.Game==True:
@@ -186,11 +186,11 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         self.screen.blit(bg, (0, 0))
         self.start_ticks = pygame.time.get_ticks()
 
-        self.render_multi_line("Pytanie", 20, 20, 45)
-        self.render_multi_line("1) odpowiedz", 50, 130, 30)
-        self.render_multi_line("2) odpoiwedz", 50, 200, 30)
-        self.render_multi_line("3) odpoiwedz", 50, 270, 30)
-        self.render_multi_line("4) odpoiwedz", 50, 340, 30)
+        self.render_multi_line(self.pytanie[0], 20, 20, 45)
+        self.render_multi_line(self.odp[0], 50, 130, 30)
+        self.render_multi_line(self.odp[1], 50, 200, 30)
+        self.render_multi_line(self.odp[2], 50, 270, 30)
+        self.render_multi_line(self.odp[3], 50, 340, 30)
 
         settings = {
             "command": self.print_on_enter,
@@ -207,41 +207,23 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         self.zbrect = pygame.Rect((10, 520), (BT_WIDTH-50, BT_HEIGHT-50))
         self.screen.blit(self.zb, (10, 520))
 
-    def pytanie(self):
+    def pytania(self):
         bg = pygame.image.load('Img/ss.jpg').convert()
         bg = pygame.transform.scale(bg, (BG_WIDTH, BG_HEIGHT))
         self.screen.blit(bg, (0, 0))
         self.client.send_message("Pytanie : "+str(self.iloscPytan))
         self.client.send_message("PYTANIE")
-        print('Przed')
-        pytanie = self.client.receive_message()
-        print('p', pytanie)
-        print('1')
-        #odp1 = self.client.receive_message()
-        #print('odp1', odp1)
-        ''' print('2')
-        odp2 = self.client.receive_message()
-        print('3')
-        odp3 = self.client.receive_message()
-        print('4')
-        odp4 = self.client.receive_message()
-        print('Po')'''
-        '''self.client.receive_message()
-        self.client.receive_message()
-        self.client.receive_message()
-        self.client.receive_message()
-        self.client.receive_message()'''
-        print('p',pytanie)
-        #print(odp1)
-        #print(odp2)
-        #print(odp3)
+        self.pytanie = self.client.receive_message()
+        print('p', self.pytanie)
+        self.odp = self.client.receive_message()
+        print('odp', self.odp)
 
         #pytaniel=pickle.load(pytanie)
-        self.render_multi_line(pytanie[0], 20, 20, 35)
-        self.render_multi_line('o', 50, 130, 30)
-        self.render_multi_line('a', 50, 200, 30)
-        self.render_multi_line('x', 50, 270, 30)
-        self.render_multi_line('u', 50, 340, 30)
+        self.render_multi_line(self.pytanie[0], 20, 20, 35)
+        self.render_multi_line(self.odp[0], 50, 130, 30)
+        self.render_multi_line(self.odp[1], 50, 200, 30)
+        self.render_multi_line(self.odp[2], 50, 270, 30)
+        self.render_multi_line(self.odp[3], 50, 340, 30)
         pygame.display.update()
         self.wait()
         self.game()
@@ -274,7 +256,7 @@ podczas których może zmienić rozłożenie pieniędzy na pola ale taką szans�
         if self.koniecCzasu == True:
             for i in self.pole.keys():
                 self.client.send_message("Sprawdzanie odpoiwedzi")
-                if(self.prawidlowa==i):
+                if(self.odp[4]==i):
                     self.money=self.pole[i]
                     self.client.send_message("Pozostale pieniadze gracza : "+ str(self.money))
             self.poprawna()

@@ -33,23 +33,23 @@ class Client:
                 raise ConnectionError()  # jezeli nie ma odebranych danych to polaczenie zostalo przerwane
             nodecoded_data = nodecoded_data + received_data
             #(messages, other_data) = self.separate_data_received(nodecoded_data)
-            parts_data = nodecoded_data.split(b'\0')
+            #parts_data = nodecoded_data.split(b'\0')
+            parts_data = received_data.split(b'\0')
             messages = parts_data[:-1]
         messages = [message.decode('utf-8') for message in messages]  # dekoduje wiadomosci
         print('mes',messages)
         for msg in messages:
             print(msg)
-        #print('ot',other_data)
         #return (messages, other_data)  # messages- dane zdekodowane , other_data- dane ktorych sie nie udalo zdekodowac
         return messages
-
+    '''
     def separate_data_received(data):
         # Rozdziela wiadomosci po znaku \0
         parts_data = data.split(b'\0')
         message = parts_data[:-1]
-        #next_message = parts_data[-1]
+        next_message = parts_data[-1]
         #return (message, next_message)  # zwraca wiadomosc oraz czesc nastepnej
-        return message
+        return message'''
 
     def close(self):
         try:
