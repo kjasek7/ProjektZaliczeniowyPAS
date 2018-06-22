@@ -2,7 +2,7 @@ import queue
 import socket
 import threading
 import random
-import  pickle
+import pickle
 
 
 clients = {}
@@ -14,6 +14,7 @@ def pytania():
         for line in file:
             pytanie.append(line.split(":"))
     losujPytanie = pytanie[random.randint(0,len(pytanie)-1)]
+    return losujPytanie
 
 def parser(data):
     parts = data.split(b'\0')
@@ -37,7 +38,11 @@ def receive_message(socket):
 def send_message(socket, question):
     # dodaje znak konca wiadomosci i koduje ja w formacie UTF8
     question += '\0'
-    #question = [message.encode('utf-8') for message in question]
+    data = question.encode('utf-8')
+    print('wysylam', data)
+    socket.sendall(data)
+
+    """
     data = question #pierwsza wersja kodowanie w utf8, jak starczy czasu to zamienimy na szyfrowanie
     if type(data)==type(str()):
         data = question.encode('utf-8')
@@ -45,7 +50,7 @@ def send_message(socket, question):
     else:
         dana = pickle.dumps(data)
         socket.sendall(dana)
-
+    """
 def client_receive(socket, addr):
 
     while True:
@@ -64,18 +69,39 @@ def client_receive(socket, addr):
                 else:
                     for i in clients:
                         clients[i]['queue'].put(message)
+                        print('m',message)
 
 
 def client_send(socket, client_queue, addr):
     while True:
         message = client_queue.get()
-        if (message == 'PYTANIE'):
-            pytania()
-            message = losujPytanie
-        elif message == None: break
+        if message == None: break
         try:
+            if (message == 'PYTANIE'):
+                losujPytanie = pytania()
+                print("all", losujPytanie)
+                msg1 = losujPytanie[0]
+                msg2 = losujPytanie[1]
+                msg3 = losujPytanie[2]
+                msg4 = losujPytanie[3]
+                msg5 = losujPytanie[4]
+                msg6 = losujPytanie[5]
+                print("pytanie", msg1)
+                print("a", msg2)
+                print("b", msg3)
+                print("c", msg4)
+                print("d", msg5)
+                print("odp", msg6)
+                send_message(socket, msg1) #pytanie
+                send_message(socket, msg2) #a
+                send_message(socket, msg3) #b
+                send_message(socket, msg4) #c
+                send_message(socket, msg5) #d
+                send_message(socket, msg6) #poprawna odp
+                print('wyslano')
+                break
             #message = "wal sie"
-            send_message(socket, message)
+            #send_message(socket, message)
         except (ConnectionError, BrokenPipeError):
             client_disconnect(socket, addr)
             break

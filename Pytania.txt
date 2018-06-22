@@ -1,7 +1,7 @@
-Jakiego koloru koszulkę w słynnej bajcę dla maluchów miał Kubuś Puchatek?:a. Czarnś:b. Granatową:c. Zieloną:d. Czerwoną:d. Czerwoną
-Jak nazywa się kraj, który ma największą liczbę ludności?:a. Oman:b. Niemcy:c. Rosja:d. Chiny:d. Chiny 
-Skąd dokąd płynął Titanic w swym dziewiczym rejsie?:a. Z Southampton do Nowego Jorku:b. Z Londynu do Bostonu:c. Z Liverpoolu do Filadelfii:d. Z Miami do Honolulu:a. Z Southampton do Nowego Jorku
-Co moze byc cięciwą okręgu?::a. Promień:b. średnica:c. Styczna:d. Obwodo:b. średnica
-Żółta łódź podwodna to statek?:a.Beatlesów:b.Doorsów:c.Pearl Jamu:d.Joy Division:a.Beatlesów
-Kim była Ariel z filmu Disneya?:a. Syrenką:b. Elfem:c. Rusałką:d. Indianką:a. Syrenką
-Jak czarny charakter w "Królu Lwie" Disneya miał na imię?:a. Rafiki:b. Skaza:c. Aslan:d. Mufasa:b. Skaza 
+﻿Jakiego koloru koszulke w slynnej bajce dla maluchow mial Kubus Puchatek?:a. Czarna:b. Granatowa:c. Zielona:d. Czerwona:d. Czerwona
+Jak nazywa się kraj, ktory ma najwiekszą liczbe ludnosci?:a. Oman:b. Niemcy:c. Rosja:d. Chiny:d. Chiny 
+Skad dokad plynal Titanic w swym dziewiczym rejsie?:a. Z Southampton do Nowego Jorku:b. Z Londynu do Bostonu:c. Z Liverpoolu do Filadelfii:d. Z Miami do Honolulu:a. Z Southampton do Nowego Jorku
+Co moze byc cieciwa okregu?:a. Promien:b. Srednica:c. Styczna:d. Obwodod:b. Srednica
+Zolta lodz podwodna to statek?:a.Beatlesow:b.Doorsow:c.Pearl Jamu:d.Joy Division:a.Beatlesow
+Kim byla Ariel z filmu Disneya?:a. Syrenka:b. Elfem:c. Rusalka:d. Indianka:a. Syrenka
+Jak czarny charakter w "Krolu Lwie" Disneya mial na imie?:a. Rafiki:b. Skaza:c. Aslan:d. Mufasa:b. Skaza 
